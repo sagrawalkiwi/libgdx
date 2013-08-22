@@ -12,7 +12,7 @@ static jmethodID preSolveID = 0;
 static jmethodID postSolveID = 0;
 static jmethodID reportFixtureID = 0;
 static jmethodID reportRayFixtureID = 0;
-
+static unsigned char       g_useDefaultContactFilter = 0;
 class CustomRayCastCallback: public b2RayCastCallback
 {
 private:
@@ -159,7 +159,7 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_physics_box2d_World_setUseDefaultCo
 
 		// FIXME
 	
-
+    g_useDefaultContactFilter = use;
 }
 
 JNIEXPORT jlong JNICALL Java_com_badlogic_gdx_physics_box2d_World_jniCreateBody(JNIEnv* env, jobject object, jlong addr, jint type, jfloat positionX, jfloat positionY, jfloat angle, jfloat linearVelocityX, jfloat linearVelocityY, jfloat angularVelocity, jfloat linearDamping, jfloat angularDamping, jboolean allowSleep, jboolean awake, jboolean fixedRotation, jboolean bullet, jboolean active, jfloat inertiaScale) {
@@ -430,9 +430,12 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_physics_box2d_World_jniStep(JNIEnv*
 //@line:603
 
 		b2World* world = (b2World*)addr;
-		CustomContactFilter contactFilter(env, object);
-		CustomContactListener contactListener(env,object);
-		world->SetContactFilter(&contactFilter);
+        CustomContactListener contactListener(env,object);
+        if(g_useDefaultContactFilter)
+        {
+            CustomContactFilter contactFilter(env, object);
+            world->SetContactFilter(&contactFilter);
+        }
 		world->SetContactListener(&contactListener);
 		world->Step( timeStep, velocityIterations, positionIterations );
 		world->SetContactFilter(&defaultFilter);
