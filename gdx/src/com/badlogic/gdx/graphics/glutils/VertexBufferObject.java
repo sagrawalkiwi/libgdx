@@ -211,14 +211,16 @@ public class VertexBufferObject implements VertexData {
 		int numAttributes = attributes.size();
 		for (int i = 0; i < numAttributes; i++) {
 			VertexAttribute attribute = attributes.get(i);
-			shader.enableVertexAttribute(attribute.alias);
+			if(attribute.locationInShader == -1)
+				attribute.locationInShader = shader.fetchAttributeLocation(attribute.alias);
+			shader.enableVertexAttribute(attribute.locationInShader);
 			int colorType = GL20.GL_FLOAT;
 			boolean normalize = false;
 			if (attribute.usage == Usage.ColorPacked) {
 				colorType = GL20.GL_UNSIGNED_BYTE;
 				normalize = true;
 			}
-			shader.setVertexAttribute(attribute.alias, attribute.numComponents, colorType, normalize, attributes.vertexSize,
+			shader.setVertexAttribute(attribute.locationInShader, attribute.numComponents, colorType, normalize, attributes.vertexSize,
 				attribute.offset);
 		}
 		isBound = true;
@@ -266,7 +268,9 @@ public class VertexBufferObject implements VertexData {
 		int numAttributes = attributes.size();
 		for (int i = 0; i < numAttributes; i++) {
 			VertexAttribute attribute = attributes.get(i);
-			shader.disableVertexAttribute(attribute.alias);
+			if(attribute.locationInShader == -1)
+				attribute.locationInShader = shader.fetchAttributeLocation(attribute.alias);
+			shader.disableVertexAttribute(attribute.locationInShader);
 		}
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		isBound = false;

@@ -261,7 +261,7 @@ public class ShaderProgram implements Disposable {
 		return isCompiled;
 	}
 
-	private int fetchAttributeLocation (String name) {
+	public int fetchAttributeLocation (String name) {
 		GL20 gl = Gdx.graphics.getGL20();
 		// -2 == not yet cached
 		// -1 == cached but not found
