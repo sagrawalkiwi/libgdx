@@ -30,6 +30,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
@@ -83,6 +84,37 @@ public class ShaderProgram implements Disposable {
 
 	/** flag indicating whether attributes & uniforms must be present at all times **/
 	public static boolean pedantic = true;
+
+	public enum BoundState {
+		Bound,
+		Unbound,
+		NeedsUnbound
+	};
+	public class AttributeState{
+		public int location=-1, size=-1, type=-1, stride=-1;
+		public boolean normalize = false; 
+		public Buffer buffer = null;
+		public BoundState state = BoundState.Unbound;
+		public int offset=-1;
+		public void set (int location, int size, int type, boolean normalize, int stride, ByteBuffer buffer) {
+			this.location = location;
+			this.size = size;
+			this.type = type;
+			this.normalize = normalize;
+			this.stride = stride;
+			this.buffer = buffer;
+		}
+		public void set (int location, int size, int type, boolean normalize, int stride, int offset) {
+			this.location = location;
+			this.size = size;
+			this.type = type;
+			this.normalize = normalize;
+			this.stride = stride;
+			this.offset = offset;
+		}
+	}
+	public static final int MAX_ATTRIBUTE_STATES = 10;
+	public AttributeState []attributeStates=new AttributeState[MAX_ATTRIBUTE_STATES];
 
 	/** the list of currently available shaders **/
 	private final static ObjectMap<Application, List<ShaderProgram>> shaders = new ObjectMap<Application, List<ShaderProgram>>();
@@ -146,6 +178,9 @@ public class ShaderProgram implements Disposable {
 	 * @param fragmentShader the fragment shader */
 
 	public ShaderProgram (String vertexShader, String fragmentShader) {
+		for(int i = 0; i < MAX_ATTRIBUTE_STATES; i++)
+			attributeStates[i] = new AttributeState();
+		
 		if (vertexShader == null) throw new IllegalArgumentException("vertex shader must not be null");
 		if (fragmentShader == null) throw new IllegalArgumentException("fragment shader must not be null");
 
@@ -752,6 +787,59 @@ public class ShaderProgram implements Disposable {
 		gl.glEnableVertexAttribArray(location);
 	}
 
+	public void disablePendingVertexAttributes () {
+		for(int i = 0; i < ShaderProgram.MAX_ATTRIBUTE_STATES; i++)
+			if(attributeStates[i].state == BoundState.NeedsUnbound)
+				Gdx.gl20.glDisableVertexAttribArray(attributeStates[i].location);
+	}
+
+	public void disableVertexAttribute (VertexAttribute attribute) {
+		if(attribute.locationInShader == -1)
+			attribute.locationInShader = fetchAttributeLocation(attribute.alias);
+//		Gdx.gl20.glDisableVertexAttribArray(attribute.locationInShader );
+		attributeStates[attribute.locationInShader].state = BoundState.NeedsUnbound;
+	}
+	
+	public void applyVertexAttribute(VertexAttribute attribute, int size, int type, boolean normalize, int stride, ByteBuffer buffer){
+		if(attribute.locationInShader == -1)
+			attribute.locationInShader = fetchAttributeLocation(attribute.alias);
+		
+		ShaderProgram.AttributeState attributeState = attributeStates[attribute.locationInShader];
+		
+		if(attributeState.state != ShaderProgram.BoundState.Bound){
+			if(attributeState.state == BoundState.Unbound)
+				Gdx.gl20.glEnableVertexAttribArray(attribute.locationInShader);
+			attributeState.state = ShaderProgram.BoundState.Bound;
+		}
+		
+//		if(attributeState.size != size || attributeState.type != type || 
+//			attributeState.normalize != normalize || attributeState.stride != stride || attributeState.buffer != buffer)
+		{
+			Gdx.gl20.glVertexAttribPointer(attribute.locationInShader, size, type, normalize, stride, buffer);
+//			attributeState.set(attribute.locationInShader, size, type, normalize, stride, buffer);
+		}
+	}
+
+	public void applyVertexAttribute(VertexAttribute attribute, int size, int type, boolean normalize, int stride, int offset){
+		if(attribute.locationInShader == -1)
+			attribute.locationInShader = fetchAttributeLocation(attribute.alias);
+		
+		ShaderProgram.AttributeState attributeState = attributeStates[attribute.locationInShader];
+		
+		if(attributeState.state != ShaderProgram.BoundState.Bound){
+			if(attributeState.state == BoundState.Unbound)
+				Gdx.gl20.glEnableVertexAttribArray(attribute.locationInShader);
+			attributeState.state = ShaderProgram.BoundState.Bound;
+		}
+		
+//		if(attributeState.size != size || attributeState.type != type || 
+//			attributeState.normalize != normalize || attributeState.stride != stride || attributeState.offset != offset)
+		{
+			Gdx.gl20.glVertexAttribPointer(attribute.locationInShader, size, type, normalize, stride, offset);
+//			attributeState.set(attribute.locationInShader, size, type, normalize, stride, offset);
+		}
+	}
+
 	private void checkManaged () {
 		if (invalidated) {
 			compileShaders(vertexShaderSource, fragmentShaderSource);
@@ -919,4 +1007,5 @@ public class ShaderProgram implements Disposable {
 	public String[] getUniforms () {
 		return uniformNames;
 	}
+
 }

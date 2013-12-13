@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram.BoundState;
 import com.badlogic.gdx.utils.BufferUtils;
 
 /** <p>
@@ -183,9 +185,7 @@ public class VertexArray implements VertexData {
 		byteBuffer.limit(buffer.limit() * 4);
 		for (int i = 0; i < numAttributes; i++) {
 			VertexAttribute attribute = attributes.get(i);
-			if(attribute.locationInShader == -1)
-				attribute.locationInShader = shader.fetchAttributeLocation(attribute.alias);
-			shader.enableVertexAttribute(attribute.locationInShader);
+			
 			int colorType = GL20.GL_FLOAT;
 			boolean normalize = false;
 			if (attribute.usage == Usage.ColorPacked) {
@@ -193,8 +193,11 @@ public class VertexArray implements VertexData {
 				normalize = true;
 			}
 			byteBuffer.position(attribute.offset);
-			shader.setVertexAttribute(attribute.locationInShader, attribute.numComponents, colorType, normalize, attributes.vertexSize, byteBuffer);
+
+			shader.applyVertexAttribute(attribute, attribute.numComponents, colorType, normalize, attributes.vertexSize, byteBuffer);
 		}
+
+		shader.disablePendingVertexAttributes();
 		isBound = true;
 	}
 	
@@ -206,9 +209,7 @@ public class VertexArray implements VertexData {
 		int numAttributes = attributes.size();
 		for (int i = 0; i < numAttributes; i++) {
 			VertexAttribute attribute = attributes.get(i);
-			if(attribute.locationInShader == -1)
-				attribute.locationInShader = shader.fetchAttributeLocation(attribute.alias);
-			shader.disableVertexAttribute(attribute.locationInShader);
+			shader.disableVertexAttribute(attribute);
 		}
 		isBound = false;
 	}
