@@ -151,6 +151,13 @@ public class VertexBufferObject implements VertexData {
 		if (isDirty) {
 			byteBuffer.limit(buffer.limit() * 4);
 			gl.glBufferData(GL11.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
+
+            //invalidate the cached locations
+            int numAttributes = attributes.size();
+            for (int i = 0; i < numAttributes; i++) {
+                VertexAttribute attribute = attributes.get(i);
+                attribute.locationInShader = -1;
+            }
 			isDirty = false;
 		}
 

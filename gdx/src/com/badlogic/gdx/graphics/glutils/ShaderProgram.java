@@ -205,6 +205,10 @@ public class ShaderProgram implements Disposable {
 	 * @param vertexShader
 	 * @param fragmentShader */
 	private void compileShaders (String vertexShader, String fragmentShader) {
+        for(int i = 0; i < MAX_ATTRIBUTE_STATES; i++)
+			if(attributeStates[i] != null)
+                attributeStates[i].state = ShaderProgram.BoundState.Unbound;
+                
 		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
 		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER, fragmentShader);
 
