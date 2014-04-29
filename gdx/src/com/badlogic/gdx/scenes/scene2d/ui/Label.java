@@ -38,7 +38,7 @@ public class Label extends Widget {
 	private LabelStyle style;
 	private final TextBounds bounds = new TextBounds();
 	private final StringBuilder text = new StringBuilder();
-	private BitmapFontCache cache;
+	protected BitmapFontCache cache;
 	private int labelAlign = Align.left;
 	private HAlignment lineAlign = HAlignment.LEFT;
 	private boolean wrap;
