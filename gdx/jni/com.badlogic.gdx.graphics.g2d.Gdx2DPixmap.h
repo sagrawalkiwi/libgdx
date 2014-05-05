@@ -147,6 +147,13 @@ JNIEXPORT void JNICALL Java_com_badlogic_gdx_graphics_g2d_Gdx2DPixmap_setScale
 JNIEXPORT jstring JNICALL Java_com_badlogic_gdx_graphics_g2d_Gdx2DPixmap_getFailureReason
   (JNIEnv *, jclass);
 
+/*
+ * Class:     com_badlogic_gdx_graphics_g2d_Gdx2DPixmap
+ * Method:    computeOpaqueRegion
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_graphics_g2d_Gdx2DPixmap_computeOpaqueRegion
+    (JNIEnv * env, jclass clazz, jlong pixmap, jintArray arr);
 #ifdef __cplusplus
 }
 #endif

@@ -64,6 +64,7 @@ typedef struct {
 	uint32_t height;
 	uint32_t format;
 	const unsigned char* pixels;
+    int32_t opq_left, opq_right, opq_top, opq_bottom;
 } gdx2d_pixmap;
 
 JNIEXPORT gdx2d_pixmap* gdx2d_load (const unsigned char *buffer, uint32_t len, uint32_t req_format);
@@ -88,6 +89,7 @@ JNIEXPORT void		gdx2d_draw_pixmap (const gdx2d_pixmap* src_pixmap,
 								   int32_t dst_x, int32_t dst_y, uint32_t dst_width, uint32_t dst_height);
 
 JNIEXPORT uint32_t gdx2d_bytes_per_pixel(uint32_t format);
+JNIEXPORT void		gdx2d_compute_opaque_region(gdx2d_pixmap* pixmap);
 
 #ifdef __cplusplus
 }

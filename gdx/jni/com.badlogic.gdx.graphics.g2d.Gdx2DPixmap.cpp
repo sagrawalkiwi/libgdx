@@ -177,3 +177,21 @@ JNIEXPORT jstring JNICALL Java_com_badlogic_gdx_graphics_g2d_Gdx2DPixmap_getFail
 
 }
 
+JNIEXPORT void JNICALL Java_com_badlogic_gdx_graphics_g2d_Gdx2DPixmap_computeOpaqueRegion(JNIEnv* env, jclass clazz, jlong pixmap, jintArray arr) {
+    
+    gdx2d_compute_opaque_region((gdx2d_pixmap*)pixmap);
+	
+
+    // initializations, declarations, etc
+    jint *c_array = env->GetIntArrayElements(arr, NULL);;
+    
+    c_array[0] = ((gdx2d_pixmap*)pixmap)->opq_left;
+    c_array[1] = ((gdx2d_pixmap*)pixmap)->opq_right;
+    c_array[2] = ((gdx2d_pixmap*)pixmap)->opq_top;
+    c_array[3] = ((gdx2d_pixmap*)pixmap)->opq_bottom;
+
+    // release the memory so java can have it again
+    env->ReleaseIntArrayElements(arr, c_array, 0);
+
+}
+

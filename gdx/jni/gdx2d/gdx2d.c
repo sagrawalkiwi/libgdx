@@ -233,6 +233,10 @@ gdx2d_pixmap* gdx2d_load(const unsigned char *buffer, uint32_t len, uint32_t req
 	pixmap->height = (uint32_t)height;
 	pixmap->format = (uint32_t)format;
 	pixmap->pixels = pixels;
+    pixmap->opq_left = -1;
+    pixmap->opq_right = -1;
+    pixmap->opq_top = -1;
+    pixmap->opq_bottom = -1;
 	return pixmap;
 }
 
@@ -259,6 +263,10 @@ gdx2d_pixmap* gdx2d_new(uint32_t width, uint32_t height, uint32_t format) {
 	pixmap->height = height;
 	pixmap->format = format;
 	pixmap->pixels = (unsigned char*)malloc(width * height * gdx2d_bytes_per_pixel(format));
+    pixmap->opq_left = -1;
+    pixmap->opq_right = -1;
+    pixmap->opq_top = -1;
+    pixmap->opq_bottom = -1;
 	return pixmap;
 }
 void gdx2d_free(const gdx2d_pixmap* pixmap) {
@@ -835,4 +843,82 @@ void gdx2d_draw_pixmap(const gdx2d_pixmap* src_pixmap, const gdx2d_pixmap* dst_p
 	} else {
 		blit(src_pixmap, dst_pixmap, src_x, src_y, src_width, src_height, dst_x, dst_y, dst_width, dst_height);
 	}
+}
+
+
+void		gdx2d_compute_opaque_region(gdx2d_pixmap* pixmap){
+    if(!pixmap || !pixmap->pixels)
+        return;
+    //is already computed?
+    if(pixmap->opq_left != -1)
+        return;
+
+    int MAX_VALUE = 0xfffff;
+	int leftNonTransparentX = -1;
+	int rightNonTransparentX = MAX_VALUE;
+	int topNonTransparentY = -1;
+	int bottomNonTransparentY = MAX_VALUE;
+
+    
+    
+    
+    
+    
+    int width = pixmap->width;
+    int height = pixmap->height;
+    int x = 0;
+    int y = 0;
+    for(y = 0;y < height;y++) {
+        for(x = 0;x < width;x++) {
+            if((gdx2d_get_pixel(pixmap,x,y)&0xff)) {
+                topNonTransparentY = y;
+                break;
+            }
+        }
+        if(topNonTransparentY != -1) break;
+    }
+    if(topNonTransparentY == -1) topNonTransparentY = 0;
+    
+    for(y = height - 1;y >= 0;y--) {
+        for(x = 0;x < width;x++) {
+            if((gdx2d_get_pixel(pixmap,x,y)&0xff)) {
+                bottomNonTransparentY = y;
+                break;
+            }
+        }
+        if(bottomNonTransparentY != MAX_VALUE) break;
+    }
+    if(bottomNonTransparentY == MAX_VALUE) bottomNonTransparentY = (height - 1);
+    
+    for(x = 0;x < width;x++) {
+        for(y = topNonTransparentY;y <= bottomNonTransparentY;y++) {
+            if((gdx2d_get_pixel(pixmap,x,y)&0xff)) {
+                leftNonTransparentX = x;
+                break;
+            }
+        }
+        if(leftNonTransparentX != -1) break;
+    }
+    if(leftNonTransparentX == -1) leftNonTransparentX = 0;
+    
+    for(x = width - 1;x >= 0;x--) {
+        for(y = topNonTransparentY;y <= bottomNonTransparentY;y++) {
+            if((gdx2d_get_pixel(pixmap,x,y)&0xff)) {
+                rightNonTransparentX = x;
+                break;
+            }
+        }
+        if(rightNonTransparentX != MAX_VALUE) break;
+    }
+    if(rightNonTransparentX == MAX_VALUE) rightNonTransparentX = (width - 1);
+
+    
+    
+    pixmap->opq_left    = leftNonTransparentX;
+    pixmap->opq_right   = rightNonTransparentX;
+    pixmap->opq_top     = topNonTransparentY;
+    pixmap->opq_bottom  = bottomNonTransparentY;
+    
+    
+    
 }

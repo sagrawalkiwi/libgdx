@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.math.Rectangle;
 
 /** @author mzechner */
 public class Gdx2DPixmap implements Disposable {
@@ -232,6 +233,16 @@ public class Gdx2DPixmap implements Disposable {
 		}
 	}
 
+    public Rectangle getOpaqueRegion () {
+        int []dims = new int[4]; //left,right,top,bottom
+		computeOpaqueRegion(basePtr, dims);
+        return new Rectangle(
+                             dims[0], //left
+                             dims[2], //top
+                             dims[1]-dims[0], //width
+                             dims[3]-dims[2]); //height
+    }
+
 	// @off
 	/*JNI
 	#include <gdx2d/gdx2d.h>
@@ -325,4 +336,9 @@ public class Gdx2DPixmap implements Disposable {
 	public static native String getFailureReason (); /*
      return env->NewStringUTF(gdx2d_get_failure_reason());
    */
+    
+	private static native void computeOpaqueRegion (long pixmap, int []dims); /*
+     return gdx2d_compute_opaque_region((gdx2d_pixmap*)pixmap, dims);
+    */
+
 }

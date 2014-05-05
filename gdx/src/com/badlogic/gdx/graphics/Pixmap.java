@@ -23,6 +23,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.math.Rectangle;
 
 /** <p>
  * A Pixmap represents an image in memory. It has a width and height expressed in pixels as well as a {@link Format} specifying
@@ -354,4 +355,9 @@ public class Pixmap implements Disposable {
 	public static Blending getBlending () {
 		return blending;
 	}
+
+	/** @return The width of the Pixmap in pixels. */
+	public Rectangle getOpaqueRegion () {
+		return pixmap.getOpaqueRegion();
+    }
 }
