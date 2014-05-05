@@ -36,6 +36,7 @@ public class Image extends Widget {
 	private int align = Align.center;
 	private float imageX, imageY, imageWidth, imageHeight;
 	private Drawable drawable;
+    private boolean isTextureRegionDrawable = false;
 
 	/** Creates an image with no region or patch, stretched, and aligned center. */
 	public Image () {
@@ -127,7 +128,7 @@ public class Image extends Widget {
 		float scaleY = getScaleY();
 
 		if (drawable != null) {
-			if (drawable.getClass() == TextureRegionDrawable.class) {
+			if (isTextureRegionDrawable) {
 				TextureRegion region = ((TextureRegionDrawable)drawable).getRegion();
 				float rotation = getRotation();
 				if (scaleX == 1 && scaleY == 1 && rotation == 0)
@@ -143,6 +144,7 @@ public class Image extends Widget {
 
 	public void setDrawable (Drawable drawable) {
 		if (drawable != null) {
+            isTextureRegionDrawable = drawable.getClass() == TextureRegionDrawable.class;
 			if (this.drawable == drawable) return;
 			if (getPrefWidth() != drawable.getMinWidth() || getPrefHeight() != drawable.getMinHeight()) invalidateHierarchy();
 		} else {

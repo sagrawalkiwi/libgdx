@@ -5,6 +5,7 @@
 		<ant antfile="build-linux32.xml" target="clean"/>
 		<ant antfile="build-linux64.xml" target="clean"/>
 		<ant antfile="build-android32.xml" target="clean"/>
+		<ant antfile="build-macosx32.xml" target="clean"/>
 
 	</target>
 	
@@ -14,6 +15,7 @@
 		<ant antfile="build-linux32.xml"/>
 		<ant antfile="build-linux64.xml"/>
 		<ant antfile="build-android32.xml"/>
+		<ant antfile="build-macosx32.xml"/>
 
 	</target>
 	
