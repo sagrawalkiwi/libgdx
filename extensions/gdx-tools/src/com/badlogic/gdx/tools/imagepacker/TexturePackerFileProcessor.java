@@ -80,6 +80,12 @@ public class TexturePackerFileProcessor extends FileProcessor {
 		// Start with a copy of a parent dir's settings or the default settings.
 		Settings settings = null;
 		File parent = inputDir.inputFile;
+
+		String outputImageFileName = inputDir.inputFile.getName();
+		if (parent.equals(root)) {
+			outputImageFileName = packFileName;
+		}
+
 		while (true) {
 			if (parent.equals(root)) break;
 			parent = parent.getParentFile();
@@ -100,6 +106,10 @@ public class TexturePackerFileProcessor extends FileProcessor {
 		TexturePacker2 packer = new TexturePacker2(root, settings);
 		for (Entry file : files)
 			packer.addImage(file.inputFile);
-		packer.pack(inputDir.outputDir, packFileName);
+		if(settings.useImageNameAsInnerFolderName) {
+			packer.pack(inputDir.outputDir, packFileName, outputImageFileName);
+		} else {
+			packer.pack(inputDir.outputDir, packFileName, inputDir.inputFile.getName());
+		}
 	}
 }

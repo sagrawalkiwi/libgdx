@@ -60,13 +60,13 @@ public class TexturePacker2 {
 		imageProcessor.addImage(file);
 	}
 
-	public void pack (File outputDir, String packFileName) {
+	public void pack (File outputDir, String packFileName, String imageName) {
 		outputDir.mkdirs();
 
 		if (packFileName.indexOf('.') == -1) packFileName += ".atlas";
 
 		Array<Page> pages = maxRectsPacker.pack(imageProcessor.getImages());
-		writeImages(outputDir, pages, packFileName);
+		writeImages(outputDir, pages, imageName);
 		try {
 			writePackFile(outputDir, pages, packFileName);
 		} catch (IOException ex) {
@@ -106,7 +106,7 @@ public class TexturePacker2 {
 			File outputFile;
 			while (true) {
 				outputFile = new File(outputDir, imageName + (fileIndex++ == 0 ? "" : fileIndex) + "." + settings.outputFormat);
-				if (!outputFile.exists()) break;
+				if (settings.overwriteExistingImages || !outputFile.exists()) break;
 			}
 			page.imageName = outputFile.getName();
 
@@ -346,6 +346,8 @@ public class TexturePacker2 {
 		public boolean ignoreBlankImages = true;
 		public boolean fast;
 		public boolean debug;
+		public boolean useImageNameAsInnerFolderName = false;
+		public boolean overwriteExistingImages = false;
 
 		public Settings () {
 		}
@@ -375,6 +377,8 @@ public class TexturePacker2 {
 			wrapY = settings.wrapY;
 			duplicatePadding = settings.duplicatePadding;
 			debug = settings.debug;
+			useImageNameAsInnerFolderName = settings.useImageNameAsInnerFolderName;
+			overwriteExistingImages = settings.overwriteExistingImages;
 		}
 	}
 
