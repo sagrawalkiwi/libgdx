@@ -33,14 +33,21 @@ class TableToolkit extends Toolkit<Actor, Table, TableLayout> {
 
 	public void addChild (Actor parent, Actor child) {
 		child.remove();
-		try {
-			parent.getClass().getMethod("setWidget", Actor.class).invoke(parent, child);
-			return;
-		} catch (InvocationTargetException ex) {
-			throw new RuntimeException("Error calling setWidget.", ex);
-		} catch (Exception ignored) {
-		}
-		((Group)parent).addActor(child);
+        
+        
+//      This is causing 3 secs increase in loadtimes, at least in iOS.
+//		try {
+//			parent.getClass().getMethod("setWidget", Actor.class).invoke(parent, child);
+//			return;
+//		} catch (InvocationTargetException ex) {
+//			throw new RuntimeException("Error calling setWidget.", ex);
+//		} catch (Exception ignored) {
+//		}
+//      instead I am adding a dummy function to Actor
+        parent.setWidget(child);
+
+		
+        ((Group)parent).addActor(child);
 	}
 
 	public void removeChild (Actor parent, Actor child) {

@@ -567,6 +567,7 @@ public class ScrollPane extends WidgetGroup {
 
 	/** Sets the {@link Actor} embedded in this scroll pane.
 	 * @param widget May be null to remove any current actor. */
+    @Override
 	public void setWidget (Actor widget) {
 		if (this.widget != null) super.removeActor(this.widget);
 		this.widget = widget;

@@ -685,4 +685,7 @@ public class Actor {
 		}
 		return name + " " + x + "," + y + " " + width + "x" + height;
 	}
+    public void setWidget(Actor child){
+        //dummy
+    }
 }
