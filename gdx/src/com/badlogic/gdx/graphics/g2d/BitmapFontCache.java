@@ -29,13 +29,13 @@ import com.badlogic.gdx.utils.NumberUtils;
  * @author Matthias Mann */
 public class BitmapFontCache {
 	private final BitmapFont font;
-	private float[] vertices = new float[0];
-	private int idx;
+	protected float[] vertices = new float[0];
+	protected int idx;
 	private float x, y;
-	private float color = Color.WHITE.toFloatBits();
-	private final Color tempColor = new Color(Color.WHITE);
+	protected float color = Color.WHITE.toFloatBits();
+	protected final Color tempColor = new Color(Color.WHITE);
 	private final TextBounds textBounds = new TextBounds();
-	private boolean integer = true;
+	protected boolean integer = true;
 
 	public BitmapFontCache (BitmapFont font) {
 		this(font, font.usesIntegerPositions());
@@ -211,7 +211,7 @@ public class BitmapFontCache {
 		return x - startX;
 	}
 
-	private void addGlyph (Glyph glyph, float x, float y, float width, float height) {
+	protected void addGlyph (Glyph glyph, float x, float y, float width, float height) {
 		float x2 = x + width;
 		float y2 = y + height;
 		final float u = glyph.u;

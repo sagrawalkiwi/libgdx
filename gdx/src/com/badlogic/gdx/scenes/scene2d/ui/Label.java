@@ -35,7 +35,7 @@ import com.badlogic.gdx.utils.StringBuilder;
  * The preferred size of the label is determined by the actual text bounds, unless {@link #setWrap(boolean) word wrap} is enabled.
  * @author Nathan Sweet */
 public class Label extends Widget {
-	private LabelStyle style;
+	protected LabelStyle style;
 	private final TextBounds bounds = new TextBounds();
 	private final StringBuilder text = new StringBuilder();
 	protected BitmapFontCache cache;
